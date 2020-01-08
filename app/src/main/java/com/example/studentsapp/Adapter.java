@@ -35,8 +35,10 @@ public class Adapter extends RecyclerView.Adapter<Adapter.MyViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int i) {
 
+
            myViewHolder.text.setText(information.get(i).getText());
            myViewHolder.name.setText(information.get(i).getName());
+
 
 
     }
