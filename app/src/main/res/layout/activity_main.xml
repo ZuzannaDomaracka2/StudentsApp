@@ -34,6 +34,7 @@
           android:id="@+id/textView3"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:text="Brak akt" />
+          android:text="Brak aktualnych danych"
+          android:visibility="gone"/>
    </LinearLayout>
 </android.support.constraint.ConstraintLayout>

@@ -29,8 +29,7 @@ public class NotificationService extends Service {
     List<Information> local_list;
     List<Information> remote_list;
     InformationDao informationDao;
-    private final String CHANNEL_ID="personal_notification";
-    private final int NOTIFICATION_ID=001;
+
 
 
 
@@ -46,6 +45,7 @@ public class NotificationService extends Service {
         informationDao=InformationDataBase.getDatabase(getApplicationContext()).informationDao();
         local_list=informationDao.getInformation();
         mdatabaseref = FirebaseDatabase.getInstance().getReference().child("global");
+        Toast.makeText(NotificationService.this.getApplicationContext(),"Serwis startuje",Toast.LENGTH_LONG).show();
 
 
 
@@ -130,9 +130,9 @@ public class NotificationService extends Service {
         }
 
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, channelId)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle("title")
-                .setContentText("body");
+                .setSmallIcon(R.drawable.ic_message)
+                .setContentTitle("Nowe ogłoszenie")
+                .setContentText("Kliknij, aby zobaczyć");
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
         stackBuilder.addNextIntent(new Intent(this,MainActivity.class));
         PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(

@@ -12,6 +12,7 @@ public abstract class InformationDataBase extends RoomDatabase {
     private static InformationDataBase INSTANCE;
     private static final String DB_NAME = "Info.db";
 
+
     public static InformationDataBase getDatabase(final Context context){
         if (INSTANCE == null) {
             synchronized (InformationDataBase.class) {
@@ -23,8 +24,7 @@ public abstract class InformationDataBase extends RoomDatabase {
                                 @Override
                                 public void onCreate(@NonNull SupportSQLiteDatabase db) {
                                     super.onCreate(db);
-                                    Log.d("MoviesDatabase", "populating with data...");
-                                   // new PopulateDbAsync(INSTANCE).execute();
+
                                 }
                             })
                             .build();
