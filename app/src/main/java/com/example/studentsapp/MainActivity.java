@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
 
         adapter = new Adapter(MainActivity.this,list);
         mRecyclerView.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
+
 
 
 
@@ -97,9 +97,8 @@ public class MainActivity extends AppCompatActivity {
 
 
                    }
+
                 adapter.notifyDataSetChanged();
-
-
 
 
                    if(list.isEmpty())
