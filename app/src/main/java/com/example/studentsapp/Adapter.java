@@ -25,6 +25,12 @@ public class Adapter extends RecyclerView.Adapter<Adapter.MyViewHolder> {
            information = inf;
        }
 
+       public void replaceInformation(ArrayList<Information> arrayList){
+           this.information=arrayList;
+
+
+       }
+
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
@@ -62,6 +68,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.MyViewHolder> {
 
 
     }
+
 
 
 

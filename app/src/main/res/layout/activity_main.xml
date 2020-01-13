@@ -22,6 +22,14 @@
        app:layout_constraintTop_toTopOf="parent"
        app:srcCompat="@drawable/logo_" />
 
+      <Spinner
+          android:spinnerMode="dialog"
+          android:id="@+id/mySpinner"
+          android:layout_width="match_parent"
+          android:layout_height="46dp">
+
+      </Spinner>
+
    <android.support.v7.widget.RecyclerView
        android:layout_width="match_parent"
        android:layout_height="wrap_content"
@@ -34,7 +42,7 @@
           android:id="@+id/textView3"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:text="Brak aktualnych danych"
+          android:text="Brak aktualnych ogłoszeń"
           android:visibility="gone"/>
    </LinearLayout>
 </android.support.constraint.ConstraintLayout>

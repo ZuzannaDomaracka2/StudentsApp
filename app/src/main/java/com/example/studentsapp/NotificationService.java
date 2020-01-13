@@ -64,8 +64,8 @@ public class NotificationService extends Service {
 
 
                     //Information inf = dataSnapshot1.getValue(Information.class);
-                    String text = (String)dataSnapshot1.child("text").getValue();
-                    String name = (String)dataSnapshot1.child("name").getValue();
+                    String text = (String)dataSnapshot1.child("body").getValue();
+                    String name = (String)dataSnapshot1.child("lecturerName").getValue();
                     String key = dataSnapshot1.getKey();
                     Information information= new Information(text,name,key);
                     remote_list.add(0, information);
