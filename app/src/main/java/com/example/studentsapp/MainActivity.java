@@ -1,11 +1,16 @@
 package com.example.studentsapp;
 
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
+
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -28,6 +33,7 @@ import java.util.Calendar;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -57,13 +63,17 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getSupportActionBar().hide();
+        //PeriodicWorkRequest periodicWorkRequest=new PeriodicWorkRequest.Builder(MyWorker.class,100, TimeUnit.SECONDS).build();
+       // WorkManager.getInstance().enqueue(periodicWorkRequest);
         informationDao=InformationDataBase.getDatabase(getApplicationContext()).informationDao();
 
         Intent startIntent = new Intent(getApplicationContext(), NotificationService.class);
-        startService(startIntent);
+       // startService(startIntent);
+        setAlarm1();
 
         mRecyclerView = findViewById(R.id.myRecyclerview);
         textView=findViewById(R.id.textView3);
@@ -242,6 +252,35 @@ private ArrayList<Information> getInformationfromLecturer(String lecturerName,Ar
         }
         return listToReturn;
 }
+private  void setAlarm1()
+{
+
+
+    PeriodicWorkRequest periodicWorkRequest=new PeriodicWorkRequest.Builder(MyWorker.class,15, TimeUnit.MINUTES).build();
+    WorkManager.getInstance().enqueue(periodicWorkRequest);
+    Toast.makeText(this," Work manager dziala ",Toast.LENGTH_SHORT).show();
+}
+/*
+    private void setAlarm() {
+        //getting the alarm manager
+        AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+        //creating a new intent specifying the broadcast receiver
+        Intent i = new Intent(this, MyAlarm.class);
+
+        //creating a pending intent using the intent
+        PendingIntent pi = PendingIntent.getBroadcast(this, 0, i, 0);
+        try {
+            am.cancel(pi);
+        }
+        catch(Exception ignored){}
+
+
+        //setting the repeating alarm that will be fired every day
+        am.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, 0, 15000, pi);
+        Toast.makeText(this, "Alarm is set", Toast.LENGTH_SHORT).show();
+    }
+    */
 
 }
 
