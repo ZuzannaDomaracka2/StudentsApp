@@ -38,18 +38,17 @@ import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
 
-    DatabaseReference mdatabaseref;
-    DatabaseReference ref;
 
     RecyclerView mRecyclerView;
     ArrayList<Information> list;
     Adapter adapter;
     Spinner mSpinner;
     ArrayList<String> lecturers;
+    DatabaseReference mdatabaseref;
+    DatabaseReference ref;
 
     java.util.Date date=Calendar.getInstance().getTime();
     DateFormat dateFormat=new SimpleDateFormat("dd/MM/yyyy");
-
     String strDate=dateFormat.format(date);
 
     public static boolean isVisible=false;
@@ -67,13 +66,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getSupportActionBar().hide();
-        //PeriodicWorkRequest periodicWorkRequest=new PeriodicWorkRequest.Builder(MyWorker.class,100, TimeUnit.SECONDS).build();
-       // WorkManager.getInstance().enqueue(periodicWorkRequest);
+
         informationDao=InformationDataBase.getDatabase(getApplicationContext()).informationDao();
 
         Intent startIntent = new Intent(getApplicationContext(), NotificationService.class);
-       // startService(startIntent);
-        setAlarm1();
+        startService(startIntent);
+
 
         mRecyclerView = findViewById(R.id.myRecyclerview);
         textView=findViewById(R.id.textView3);
@@ -84,8 +82,6 @@ public class MainActivity extends AppCompatActivity {
         mSpinner=findViewById(R.id.mySpinner);
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, lecturers);
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-
         mSpinner.setAdapter(arrayAdapter);
         mSpinner.setPrompt("Wybierz z listy ");
         mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -95,9 +91,9 @@ public class MainActivity extends AppCompatActivity {
                 {
                     adapter.replaceInformation(list);
                 }
+
                 else {
                     adapter.replaceInformation(getInformationfromLecturer(lecturers.get(position), list));
-                    Toast.makeText(MainActivity.this, "Wybrano", Toast.LENGTH_LONG).show();
                 }
                 adapter.notifyDataSetChanged();
             }
@@ -125,26 +121,18 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-
-
-
                list.clear();
-
-
-
 
                    for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
                        String text = (String)dataSnapshot1.child("body").getValue();
                        String name = (String)dataSnapshot1.child("lecturerName").getValue();
                        String key = dataSnapshot1.getKey();
                        Information information= new Information(text,name,key);
+
                        textView.setVisibility(View.GONE);
                        mRecyclerView.setVisibility(View.VISIBLE);
 
                        list.add(0, information);
-
-
-
 
                    }
 
@@ -177,17 +165,11 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-
-
                         for(DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()){
                             informationDao.deletebykey(dataSnapshot.getRef().getKey());
-
                             dataSnapshot1.getRef().removeValue();
 
-
-
                         }
-
 
                     }
 
@@ -205,8 +187,6 @@ public class MainActivity extends AppCompatActivity {
             }
 
         });
-
-
 
 
 
@@ -252,35 +232,7 @@ private ArrayList<Information> getInformationfromLecturer(String lecturerName,Ar
         }
         return listToReturn;
 }
-private  void setAlarm1()
-{
 
-
-    PeriodicWorkRequest periodicWorkRequest=new PeriodicWorkRequest.Builder(MyWorker.class,15, TimeUnit.MINUTES).build();
-    WorkManager.getInstance().enqueue(periodicWorkRequest);
-    Toast.makeText(this," Work manager dziala ",Toast.LENGTH_SHORT).show();
-}
-/*
-    private void setAlarm() {
-        //getting the alarm manager
-        AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-
-        //creating a new intent specifying the broadcast receiver
-        Intent i = new Intent(this, MyAlarm.class);
-
-        //creating a pending intent using the intent
-        PendingIntent pi = PendingIntent.getBroadcast(this, 0, i, 0);
-        try {
-            am.cancel(pi);
-        }
-        catch(Exception ignored){}
-
-
-        //setting the repeating alarm that will be fired every day
-        am.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, 0, 15000, pi);
-        Toast.makeText(this, "Alarm is set", Toast.LENGTH_SHORT).show();
-    }
-    */
 
 }
 

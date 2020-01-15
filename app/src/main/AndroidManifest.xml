@@ -21,10 +21,6 @@
             android:name=".NotificationService"
             android:enabled="true" >
         </service>
-        <receiver
-            android:name=".MyAlarm"
-            android:enabled="true"
-            android:exported="true" />
     </application>
 
 </manifest>

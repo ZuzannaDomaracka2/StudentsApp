@@ -13,10 +13,9 @@ import java.util.ArrayList;
 
 public class Adapter extends RecyclerView.Adapter<Adapter.MyViewHolder> {
 
-
-
        Context context;
        ArrayList<Information> information;
+
        public Adapter(Context c, ArrayList<Information> inf)
        {
            context = c;

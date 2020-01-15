@@ -1,5 +1,6 @@
 package com.example.studentsapp;
 
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -10,6 +11,8 @@ import android.content.Intent;
 import android.os.IBinder;
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
 
 import android.widget.Toast;
 
@@ -21,6 +24,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class NotificationService extends Service {
     DatabaseReference mdatabaseref;
@@ -43,9 +47,6 @@ public class NotificationService extends Service {
         informationDao=InformationDataBase.getDatabase(getApplicationContext()).informationDao();
         local_list=informationDao.getInformation();
         mdatabaseref = FirebaseDatabase.getInstance().getReference().child("global");
-        Toast.makeText(NotificationService.this.getApplicationContext(),"Serwis startuje",Toast.LENGTH_LONG).show();
-
-
 
 
         mdatabaseref.addValueEventListener(new ValueEventListener() {
@@ -60,34 +61,25 @@ public class NotificationService extends Service {
 
                 for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
 
-
-                    //Information inf = dataSnapshot1.getValue(Information.class);
                     String text = (String)dataSnapshot1.child("body").getValue();
                     String name = (String)dataSnapshot1.child("lecturerName").getValue();
                     String key = dataSnapshot1.getKey();
                     Information information= new Information(text,name,key);
                     remote_list.add(0, information);
+
                     if(!exist_in_list(information,local_list))
                     {
 
                         informationDao.insert(information);
                         if(!MainActivity.isVisible){
-                            display();
+                            setAlarm1();
+                            display( );
 
-
-                        Toast.makeText(NotificationService.this.getApplicationContext(),"Database changed",Toast.LENGTH_LONG).show();
                     }}
 
 
 
                 }
-
-
-
-
-
-
-
 
             }
             @Override
@@ -114,31 +106,31 @@ public class NotificationService extends Service {
     }
     public  void display()
     {
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        int notificationId = 1;
-        String channelId = "channel-01";
-        String channelName = "Channel Name";
-        int importance = NotificationManager.IMPORTANCE_HIGH;
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            NotificationChannel mChannel = new NotificationChannel(
-                    channelId, channelName, importance);
-            notificationManager.createNotificationChannel(mChannel);
-        }
-
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, channelId)
+        int notificationId=1;
+        NotificationManager notificationManager;
+        Intent intent = new Intent(this,MainActivity.class);
+        PendingIntent pendingIntent=PendingIntent.getActivity(this,notificationId,intent,PendingIntent.FLAG_UPDATE_CURRENT);
+        Notification.Builder builder;
+        builder=new Notification.Builder(this)
                 .setSmallIcon(R.drawable.ic_message)
+                .setAutoCancel(true)
                 .setContentTitle("Nowe ogłoszenie")
-                .setContentText("Kliknij, aby zobaczyć");
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-        stackBuilder.addNextIntent(new Intent(this,MainActivity.class));
-        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(
-                0,
-                PendingIntent.FLAG_UPDATE_CURRENT
-        );
-        mBuilder.setContentIntent(resultPendingIntent);
-        notificationManager.notify(notificationId, mBuilder.build());
+                .setContentText("Kliknij aby zobaczyć")
+                .setContentIntent(pendingIntent);
+
+        notificationManager=(NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(notificationId,builder.build());
+
+
+
+    }
+    public   void setAlarm1()
+    {
+
+
+        PeriodicWorkRequest periodicWorkRequest=new PeriodicWorkRequest.Builder(MyWorker.class,15, TimeUnit.MINUTES).build();
+        WorkManager.getInstance().enqueue(periodicWorkRequest);
     }
 
 }
