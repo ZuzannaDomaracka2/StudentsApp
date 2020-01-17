@@ -13,25 +13,28 @@ import java.util.ArrayList;
 
 public class Adapter extends RecyclerView.Adapter<Adapter.MyViewHolder> {
 
-       Context context;
-       ArrayList<Information> information;
+    Context context;
+    ArrayList<Information> information;
+    OnListener mOnListener;
 
-       public Adapter(Context c, ArrayList<Information> inf)
-       {
-           context = c;
-           information = inf;
-       }
+    public Adapter(Context c, ArrayList<Information> inf,OnListener onListener)
+    {
+        context = c;
+        information = inf;
+        this.mOnListener = onListener;
+    }
 
-       public void replaceInformation(ArrayList<Information> arrayList){
-           this.information=arrayList;
+    public void replaceInformation(ArrayList<Information> arrayList){
+        this.information=arrayList;
 
 
-       }
+    }
 
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        return new MyViewHolder(LayoutInflater.from(context).inflate(R.layout.row,viewGroup,false));
+        View view= LayoutInflater.from(context).inflate(R.layout.row,viewGroup,false);
+        return  new MyViewHolder(view,mOnListener);
 
     }
 
@@ -39,8 +42,8 @@ public class Adapter extends RecyclerView.Adapter<Adapter.MyViewHolder> {
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int i) {
 
 
-           myViewHolder.text.setText(information.get(i).getText());
-           myViewHolder.name.setText(information.get(i).getName());
+        myViewHolder.text.setText(information.get(i).getText());
+        myViewHolder.name.setText(information.get(i).getName());
 
 
 
@@ -52,18 +55,30 @@ public class Adapter extends RecyclerView.Adapter<Adapter.MyViewHolder> {
     }
 
 
-    class MyViewHolder extends RecyclerView.ViewHolder {
+    class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
-            TextView text, name;
+        TextView text, name;
+        OnListener onListener;
 
-            public MyViewHolder(@NonNull View itemView) {
+        public MyViewHolder(@NonNull View itemView,OnListener onListener) {
 
             super(itemView);
             text=itemView.findViewById(R.id.text);
             name=itemView.findViewById(R.id.name);
+            this.onListener=onListener;
+            itemView.setOnClickListener(this);
         }
 
 
+        @Override
+        public void onClick(View v) {
+            onListener.onClick(getAdapterPosition());
+
+
+        }
+    }
+    public  interface OnListener {
+        void onClick(int position);
     }
 
 

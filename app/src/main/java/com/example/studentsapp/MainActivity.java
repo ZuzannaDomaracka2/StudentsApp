@@ -7,9 +7,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.PeriodicWorkRequest;
-import androidx.work.WorkManager;
 
 import android.view.View;
 import android.widget.AdapterView;
@@ -33,10 +30,9 @@ import java.util.Calendar;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements Adapter.OnListener {
 
 
     RecyclerView mRecyclerView;
@@ -107,10 +103,11 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
         mdatabaseref = FirebaseDatabase.getInstance().getReference().child("global");
         ref=FirebaseDatabase.getInstance().getReference();
 
-        adapter = new Adapter(MainActivity.this,list);
+        adapter = new Adapter(MainActivity.this, list,this);
         mRecyclerView.setAdapter(adapter);
 
 
@@ -131,6 +128,7 @@ public class MainActivity extends AppCompatActivity {
 
                        textView.setVisibility(View.GONE);
                        mRecyclerView.setVisibility(View.VISIBLE);
+
 
                        list.add(0, information);
 
@@ -234,5 +232,13 @@ private ArrayList<Information> getInformationfromLecturer(String lecturerName,Ar
 }
 
 
+    @Override
+    public void onClick(int position) {
+        list.get(position);
+        Intent intent=new Intent(this,DetailsActivity.class);
+                startActivity(intent);
+
+
+    }
 }
 
