@@ -8,6 +8,7 @@ import android.app.Service;
 import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.IBinder;
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
@@ -72,7 +73,7 @@ public class NotificationService extends Service {
 
                         informationDao.insert(information);
                         if(!MainActivity.isVisible){
-                            setAlarm1();
+                           setAlarm1();
                             display( );
 
                     }}
@@ -107,22 +108,31 @@ public class NotificationService extends Service {
     public  void display()
     {
 
-        int notificationId=1;
-        NotificationManager notificationManager;
-        Intent intent = new Intent(this,MainActivity.class);
-        PendingIntent pendingIntent=PendingIntent.getActivity(this,notificationId,intent,PendingIntent.FLAG_UPDATE_CURRENT);
-        Notification.Builder builder;
-        builder=new Notification.Builder(this)
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        int notificationId = 1;
+        String channelId = "channel-01";
+        String channelName = "Channel Name";
+        int importance = NotificationManager.IMPORTANCE_HIGH;
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationChannel mChannel = new NotificationChannel(
+                    channelId, channelName, importance);
+            notificationManager.createNotificationChannel(mChannel);
+        }
+
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this, channelId)
                 .setSmallIcon(R.drawable.ic_message)
-                .setAutoCancel(true)
                 .setContentTitle("Nowe ogłoszenie")
-                .setContentText("Kliknij aby zobaczyć")
-                .setContentIntent(pendingIntent);
-
-        notificationManager=(NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(notificationId,builder.build());
-
-
+                .setContentText("Kliknij, aby zobaczyć");
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addNextIntent(new Intent(this,MainActivity.class));
+        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(
+                0,
+                PendingIntent.FLAG_UPDATE_CURRENT
+        );
+        mBuilder.setContentIntent(resultPendingIntent);
+        notificationManager.notify(notificationId, mBuilder.build());
 
     }
     public   void setAlarm1()
