@@ -7,6 +7,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
 
 import android.view.View;
 import android.widget.AdapterView;
@@ -30,9 +33,10 @@ import java.util.Calendar;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 
-public class MainActivity extends AppCompatActivity implements Adapter.OnListener {
+public class MainActivity extends AppCompatActivity {
 
 
     RecyclerView mRecyclerView;
@@ -103,11 +107,10 @@ public class MainActivity extends AppCompatActivity implements Adapter.OnListene
 
 
 
-
         mdatabaseref = FirebaseDatabase.getInstance().getReference().child("global");
         ref=FirebaseDatabase.getInstance().getReference();
 
-        adapter = new Adapter(MainActivity.this, list,this);
+        adapter = new Adapter(MainActivity.this,list);
         mRecyclerView.setAdapter(adapter);
 
 
@@ -118,21 +121,20 @@ public class MainActivity extends AppCompatActivity implements Adapter.OnListene
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-               list.clear();
+                list.clear();
 
-                   for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-                       String text = (String)dataSnapshot1.child("body").getValue();
-                       String name = (String)dataSnapshot1.child("lecturerName").getValue();
-                       String key = dataSnapshot1.getKey();
-                       Information information= new Information(text,name,key);
+                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                    String text = (String)dataSnapshot1.child("body").getValue();
+                    String name = (String)dataSnapshot1.child("lecturerName").getValue();
+                    String key = dataSnapshot1.getKey();
+                    Information information= new Information(text,name,key);
 
-                       textView.setVisibility(View.GONE);
-                       mRecyclerView.setVisibility(View.VISIBLE);
+                    textView.setVisibility(View.GONE);
+                    mRecyclerView.setVisibility(View.VISIBLE);
 
+                    list.add(0, information);
 
-                       list.add(0, information);
-
-                   }
+                }
 
                 if(!lecturers.get(mSpinner.getSelectedItemPosition()).equals("Wszystkie ogłoszenia "))
                 {
@@ -145,18 +147,18 @@ public class MainActivity extends AppCompatActivity implements Adapter.OnListene
 
 
 
-                   lecturers = getLecturersFromInformation(list);
-                   arrayAdapter.clear();
-                   arrayAdapter.addAll(lecturers);
+                lecturers = getLecturersFromInformation(list);
+                arrayAdapter.clear();
+                arrayAdapter.addAll(lecturers);
 
 
 
 
-                   if(list.isEmpty())
-                   {
-                       mRecyclerView.setVisibility(View.GONE);
-                       textView.setVisibility(View.VISIBLE);
-                   }
+                if(list.isEmpty())
+                {
+                    mRecyclerView.setVisibility(View.GONE);
+                    textView.setVisibility(View.VISIBLE);
+                }
 
                 Query query = ref.child("global").orderByChild("date").equalTo(strDate);
                 query.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -208,7 +210,7 @@ public class MainActivity extends AppCompatActivity implements Adapter.OnListene
         for(Information i : listInformation){
 
 
-           lecturers.add(i.getName());
+            lecturers.add(i.getName());
 
 
 
@@ -220,7 +222,7 @@ public class MainActivity extends AppCompatActivity implements Adapter.OnListene
 
     }
 
-private ArrayList<Information> getInformationfromLecturer(String lecturerName,ArrayList<Information> information){
+    private ArrayList<Information> getInformationfromLecturer(String lecturerName,ArrayList<Information> information){
 
         ArrayList listToReturn=new ArrayList();
         for( Information i : information){
@@ -229,16 +231,7 @@ private ArrayList<Information> getInformationfromLecturer(String lecturerName,Ar
 
         }
         return listToReturn;
-}
-
-
-    @Override
-    public void onClick(int position) {
-        list.get(position);
-        Intent intent=new Intent(this,DetailsActivity.class);
-                startActivity(intent);
-
-
     }
-}
 
+
+}
